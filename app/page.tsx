@@ -4,25 +4,34 @@ import { useState } from "react";
 
 export default function Home() {
   const [idea, setIdea] = useState("");
-const [result, setResult] = useState("");
-const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState("");
+  const [loading, setLoading] = useState(false);
 
-async function generateIdea() {
-  setLoading(true);
+  async function generateIdea() {
+    if (!idea.trim()) return;
 
-  const res = await fetch("/api/idea", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ idea }),
-  });
+    setLoading(true);
+    setResult("");
 
-  const data = await res.json();
+    try {
+      const res = await fetch("/api/idea", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ idea }),
+      });
 
-  setResult(data.result);
-  setLoading(false);
-}
+      const data = await res.json();
+
+      setResult(data.result);
+    } catch {
+      setResult("Something went wrong. Please try again.");
+    }
+
+    setLoading(false);
+  }
+
   const quickIdeas = [
     "AI App",
     "YouTube Channel",
@@ -35,160 +44,128 @@ async function generateIdea() {
     <main
       style={{
         minHeight: "100vh",
-        background: "linear-gradient(135deg,#020617,#312e81)",
+        background:
+          "linear-gradient(135deg,#020617,#1e1b4b,#312e81)",
         color: "white",
         fontFamily: "Arial, sans-serif",
-        padding: "30px",
+        padding: "40px 20px",
       }}
     >
       <div
         style={{
-          maxWidth: "900px",
-          margin: "0 auto",
+          maxWidth: "850px",
+          margin: "auto",
           textAlign: "center",
         }}
       >
         <h1
           style={{
-            fontSize: "52px",
+            fontSize: "56px",
+            fontWeight: "900",
             marginBottom: "10px",
-            fontWeight: "bold",
-            letterSpacing: "-2px",
           }}
         >
-          One Idea AI
+          🤖 One Idea AI
         </h1>
 
         <p
           style={{
-            color: "#d1d5db",
-            fontSize: "20px",
-            marginBottom: "40px",
-          }}
-        >
-          Turn One Idea Into Endless Opportunities
-        </p>
-
-        <textarea
-          value={idea}
-          onChange={(e) => setIdea(e.target.value)}
-          placeholder="What's your next big idea?
-
-Examples:
-• AI Startup
-• Mobile App
-• YouTube Channel
-• Side Hustle
-• Novel"
-          style={{
-            width: "100%",
-            minHeight: "180px",
-            borderRadius: "24px",
-            padding: "22px",
-            fontSize: "18px",
-            lineHeight: "1.6",
-            border: "1px solid rgba(255,255,255,.15)",
-            outline: "none",
-            resize: "vertical",
-            background: "rgba(255,255,255,.08)",
-            color: "white",
-            boxSizing: "border-box",
-            position: "relative",
-            zIndex: 10,
-            touchAction: "auto",
-          }}
-        />
-
-        <p
-          style={{
-            textAlign: "right",
-            color: "#94a3b8",
-            marginTop: "8px",
-          }}
-        >
-          {idea.length} characters
-        </p>
-
-        <p
-          style={{
-            marginTop: "25px",
+            fontSize: "22px",
             color: "#cbd5e1",
-            fontWeight: "bold",
-            fontSize: "18px",
+            marginBottom: "35px",
           }}
         >
-          ✨ Quick Start Ideas
+          Turn simple ideas into real opportunities
         </p>
 
         <div
           style={{
-            display: "flex",
-            gap: "10px",
-            justifyContent: "center",
-            flexWrap: "wrap",
+            background: "rgba(255,255,255,.08)",
+            padding: "25px",
+            borderRadius: "30px",
+            backdropFilter: "blur(10px)",
           }}
         >
-          {quickIdeas.map((item) => (
-            <button
-              key={item}
-              onClick={() => setIdea(item)}
-              style={{
-                background: "#1e293b",
-                color: "white",
-                border: "none",
-                borderRadius: "999px",
-                padding: "12px 22px",
-                cursor: "pointer",
-                fontWeight: "bold",
-              }}
-            >
-              {item}
-            </button>
-          ))}
-        </div>
+          <textarea
+            value={idea}
+            onChange={(e) => setIdea(e.target.value)}
+            placeholder="Type your idea here...
 
-        <button
-          onClick={generateIdea}
-          disabled={!idea.trim()}
-          style={{
-            marginTop: "35px",
-            padding: "18px 50px",
-            borderRadius: "999px",
-            border: "none",
-            background: idea.trim() ? "#facc15" : "#64748b",
-            color: "#111827",
-            fontWeight: "bold",
-            fontSize: "20px",
-            cursor: idea.trim()
-              ? "pointer"
-              : "not-allowed",
-            width: "100%",
-            maxWidth: "450px",
-          }}
-        >
-          🚀 Explore Opportunity
-        </button>
-{loading && (
+Example:
+AI coffee shop for students"
+            style={{
+              width: "100%",
+              minHeight: "170px",
+              padding: "20px",
+              borderRadius: "20px",
+              fontSize: "18px",
+              color: "white",
+              background: "rgba(0,0,0,.3)",
+              border: "1px solid rgba(255,255,255,.2)",
+              resize: "none",
+              boxSizing: "border-box",
+            }}
+          />
+
           <p
             style={{
-              marginTop: "30px",
-              fontSize: "20px",
+              textAlign: "right",
+              color: "#94a3b8",
             }}
           >
-            🤖 Thinking...
+            {idea.length} characters
           </p>
-        )}
+
+          <div>
+            {quickIdeas.map((item) => (
+              <button
+                key={item}
+                onClick={() => setIdea(item)}
+                style={{
+                  margin: "5px",
+                  padding: "10px 18px",
+                  borderRadius: "50px",
+                  border: "none",
+                  background: "#334155",
+                  color: "white",
+                  cursor: "pointer",
+                }}
+              >
+                {item}
+              </button>
+            ))}
+          </div>
+
+          <button
+            onClick={generateIdea}
+            disabled={loading}
+            style={{
+              marginTop: "30px",
+              width: "100%",
+              padding: "18px",
+              borderRadius: "50px",
+              border: "none",
+              background: "#facc15",
+              color: "#111827",
+              fontSize: "20px",
+              fontWeight: "bold",
+              cursor: "pointer",
+            }}
+          >
+            {loading ? "🤖 Thinking..." : "🚀 Generate Opportunity"}
+          </button>
+        </div>
 
         {result && (
           <div
             style={{
               marginTop: "30px",
               padding: "25px",
-              borderRadius: "20px",
-              background: "rgba(255,255,255,.08)",
+              borderRadius: "25px",
+              background: "rgba(255,255,255,.1)",
               textAlign: "left",
               whiteSpace: "pre-wrap",
-              lineHeight: "1.6",
+              lineHeight: "1.7",
             }}
           >
             {result}
