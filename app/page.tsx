@@ -65,7 +65,7 @@ export default function Home() {
             marginBottom: "10px",
           }}
         >
-          🤖 One Idea AI
+          💡 One Idea AI
         </h1>
 
         <p
@@ -75,7 +75,7 @@ export default function Home() {
             marginBottom: "35px",
           }}
         >
-          Turn simple ideas into real opportunities
+          Turn every thought into opportunity
         </p>
 
         <div
@@ -89,10 +89,10 @@ export default function Home() {
           <textarea
             value={idea}
             onChange={(e) => setIdea(e.target.value)}
-            placeholder="Type your idea here...
+            placeholder={`Type your idea here...
 
 Example:
-AI coffee shop for students"
+AI coffee shop for students`}
             style={{
               width: "100%",
               minHeight: "170px",
