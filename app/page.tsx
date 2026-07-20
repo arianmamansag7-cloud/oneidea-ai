@@ -4,65 +4,49 @@ import { useState } from "react";
 
 export default function Home() {
   const [idea, setIdea] = useState("");
-  const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const modes = [
+    "🎬 Creator",
+    "💼 Business",
+    "📖 Novel",
+    "🚀 Startup",
+    "💼 Career",
+    "🎓 Learning",
+  ];
 
   async function generateIdea() {
     if (!idea.trim()) return;
 
     setLoading(true);
-    setResult("");
 
-    try {
-      const res = await fetch("/api/idea", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ idea }),
-      });
-
-      const data = await res.json();
-
-      setResult(data.result);
-    } catch {
-      setResult("Something went wrong. Please try again.");
-    }
-
-    setLoading(false);
+    // API will be connected in the next step.
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
   }
-
-  const quickIdeas = [
-    "AI App",
-    "YouTube Channel",
-    "Novel",
-    "Side Hustle",
-    "AI Assistant",
-  ];
 
   return (
     <main
       style={{
         minHeight: "100vh",
-        background:
-          "linear-gradient(135deg,#020617,#1e1b4b,#312e81)",
+        background: "linear-gradient(135deg,#020617,#1e1b4b,#312e81)",
         color: "white",
-        fontFamily: "Arial, sans-serif",
-        padding: "40px 20px",
+        padding: "30px",
+        fontFamily: "Arial",
       }}
     >
       <div
         style={{
-          maxWidth: "850px",
+          maxWidth: "900px",
           margin: "auto",
-          textAlign: "center",
         }}
       >
         <h1
           style={{
-            fontSize: "56px",
-            fontWeight: "900",
-            marginBottom: "10px",
+            textAlign: "center",
+            fontSize: "52px",
+            fontWeight: "bold",
           }}
         >
           💡 One Idea AI
@@ -70,77 +54,81 @@ export default function Home() {
 
         <p
           style={{
-            fontSize: "22px",
+            textAlign: "center",
             color: "#cbd5e1",
-            marginBottom: "35px",
+            marginTop: "10px",
+            fontSize: "20px",
           }}
         >
-          Turn every thought into opportunity
+          One Idea.
+          <br />
+          Unlimited Possibilities.
         </p>
 
         <div
           style={{
+            marginTop: "35px",
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "center",
+            gap: "10px",
+          }}
+        >
+          {modes.map((mode) => (
+            <button
+              key={mode}
+              onClick={() => setIdea(mode)}
+              style={{
+                padding: "12px 20px",
+                borderRadius: "50px",
+                border: "none",
+                cursor: "pointer",
+                background: "#334155",
+                color: "white",
+                fontWeight: "bold",
+              }}
+            >
+              {mode}
+            </button>
+          ))}
+        </div>
+
+        <div
+          style={{
+            marginTop: "30px",
             background: "rgba(255,255,255,.08)",
+            borderRadius: "25px",
             padding: "25px",
-            borderRadius: "30px",
-            backdropFilter: "blur(10px)",
           }}
         >
           <textarea
             value={idea}
             onChange={(e) => setIdea(e.target.value)}
-            placeholder={`Type your idea here...
+            placeholder={`Example:
 
-Example:
-AI coffee shop for students`}
+🎬 I want a YouTube channel about AI
+
+💼 I want to start a coffee business
+
+📖 I want to write a fantasy novel`}
             style={{
               width: "100%",
-              minHeight: "170px",
-              padding: "20px",
-              borderRadius: "20px",
-              fontSize: "18px",
+              minHeight: "220px",
+              background: "#111827",
               color: "white",
-              background: "rgba(0,0,0,.3)",
-              border: "1px solid rgba(255,255,255,.2)",
+              border: "1px solid #334155",
+              borderRadius: "20px",
+              padding: "20px",
               resize: "none",
-              boxSizing: "border-box",
+              fontSize: "18px",
             }}
           />
-
-          <p
-            style={{
-              textAlign: "right",
-              color: "#94a3b8",
-            }}
-          >
-            {idea.length} characters
-          </p>
-
-          <div>
-            {quickIdeas.map((item) => (
-              <button
-                key={item}
-                onClick={() => setIdea(item)}
-                style={{
-                  margin: "5px",
-                  padding: "10px 18px",
-                  borderRadius: "50px",
-                  border: "none",
-                  background: "#334155",
-                  color: "white",
-                  cursor: "pointer",
-                }}
-              >
-                {item}
-              </button>
-            ))}
-          </div>
 
           <button
             onClick={generateIdea}
             disabled={loading}
             style={{
-              marginTop: "30px",
+              marginTop: "20px",
               width: "100%",
               padding: "18px",
               borderRadius: "50px",
@@ -152,25 +140,38 @@ AI coffee shop for students`}
               cursor: "pointer",
             }}
           >
-            {loading ? "🤖 Thinking..." : "🚀 Generate Opportunity"}
+            {loading ? "🤖 Thinking..." : "✨ Discover Opportunities"}
           </button>
         </div>
 
-        {result && (
-          <div
+        <div
+          style={{
+            marginTop: "35px",
+            background: "rgba(255,255,255,.08)",
+            padding: "25px",
+            borderRadius: "25px",
+          }}
+        >
+          <h2>🔥 Creator Mode</h2>
+
+          <p style={{ color: "#cbd5e1" }}>
+            Generate:
+          </p>
+
+          <ul
             style={{
-              marginTop: "30px",
-              padding: "25px",
-              borderRadius: "25px",
-              background: "rgba(255,255,255,.1)",
-              textAlign: "left",
-              whiteSpace: "pre-wrap",
-              lineHeight: "1.7",
+              marginTop: "10px",
+              lineHeight: "2",
             }}
           >
-            {result}
-          </div>
-        )}
+            <li>🎬 Video Ideas</li>
+            <li>📝 Scripts</li>
+            <li>🖼 Thumbnail Prompts</li>
+            <li>📄 Captions</li>
+            <li>🏷 Hashtags</li>
+            <li>📅 Smart Schedule</li>
+          </ul>
+        </div>
       </div>
     </main>
   );
