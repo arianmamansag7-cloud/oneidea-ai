@@ -5,6 +5,7 @@ import { useState } from "react";
 export default function Home() {
   const [idea, setIdea] = useState("");
   const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState("");
 
   const modes = [
     "🎬 Creator",
@@ -19,11 +20,27 @@ export default function Home() {
     if (!idea.trim()) return;
 
     setLoading(true);
+    setResult("");
 
-    // API will be connected in the next step.
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000);
+    try {
+      const res = await fetch("/api/idea", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          idea,
+        }),
+      });
+
+      const data = await res.json();
+
+      setResult(data.result);
+    } catch {
+      setResult("❌ Something went wrong.");
+    }
+
+    setLoading(false);
   }
 
   return (
@@ -144,6 +161,21 @@ export default function Home() {
           </button>
         </div>
 
+        {result && (
+          <div
+            style={{
+              marginTop: "30px",
+              background: "rgba(255,255,255,.08)",
+              padding: "25px",
+              borderRadius: "25px",
+              whiteSpace: "pre-wrap",
+              lineHeight: "1.8",
+            }}
+          >
+            {result}
+          </div>
+        )}
+
         <div
           style={{
             marginTop: "35px",
@@ -155,7 +187,7 @@ export default function Home() {
           <h2>🔥 Creator Mode</h2>
 
           <p style={{ color: "#cbd5e1" }}>
-            Generate:
+            Generate instantly:
           </p>
 
           <ul
@@ -167,6 +199,7 @@ export default function Home() {
             <li>🎬 Video Ideas</li>
             <li>📝 Scripts</li>
             <li>🖼 Thumbnail Prompts</li>
+            <li>🎥 AI Video Prompts</li>
             <li>📄 Captions</li>
             <li>🏷 Hashtags</li>
             <li>📅 Smart Schedule</li>
