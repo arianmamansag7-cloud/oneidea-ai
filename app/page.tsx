@@ -4,16 +4,19 @@ import { useState } from "react";
 
 export default function Home() {
   const [idea, setIdea] = useState("");
-  const [loading, setLoading] = useState(false);
   const [result, setResult] = useState("");
+  const [brain, setBrain] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  async function forgeIdea() {
+  async function generateIdea() {
     if (!idea.trim()) return;
 
     setLoading(true);
+    setResult("");
+    setBrain("");
 
     try {
-      const res = await fetch("/api/forge", {
+      const res = await fetch("/api/idea", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -25,8 +28,10 @@ export default function Home() {
 
       const data = await res.json();
 
+      setBrain(data.brain);
       setResult(data.result);
-    } catch (err) {
+
+    } catch (error) {
       setResult("Something went wrong.");
     }
 
@@ -37,98 +42,78 @@ export default function Home() {
     <main
       style={{
         minHeight: "100vh",
-        background: "#0f172a",
-        color: "white",
         padding: "40px",
-        fontFamily: "Arial",
+        background:
+          "linear-gradient(135deg,#111827,#1e3a8a)",
+        color: "white",
       }}
     >
-      <div
+      <h1>
+        🚀 One Idea AI
+      </h1>
+
+      <p>
+        Turn simple ideas into business opportunities.
+      </p>
+
+      <textarea
+        value={idea}
+        onChange={(e) => setIdea(e.target.value)}
+        placeholder="Enter your idea..."
         style={{
-          maxWidth: "900px",
-          margin: "0 auto",
+          width: "100%",
+          minHeight: "150px",
+          padding: "15px",
+          marginTop: "20px",
+          borderRadius: "10px",
+        }}
+      />
+
+      <button
+        onClick={generateIdea}
+        disabled={loading}
+        style={{
+          marginTop: "20px",
+          padding: "12px 25px",
+          borderRadius: "10px",
+          cursor: "pointer",
         }}
       >
-        <h1
+        {loading ? "Forging..." : "Generate"}
+      </button>
+
+
+      {brain && (
+        <div
           style={{
-            fontSize: "60px",
-            textAlign: "center",
-            marginBottom: "10px",
+            marginTop: "30px",
+            padding: "15px",
+            borderRadius: "10px",
+            background: "rgba(255,255,255,0.1)",
           }}
         >
-          🧠 Forge AI
-        </h1>
+          🧠 Brain Used:
+          <br />
+          <strong>{brain}</strong>
+        </div>
+      )}
 
-        <p
-          style={{
-            textAlign: "center",
-            color: "#94a3b8",
-            fontSize: "20px",
-            marginBottom: "40px",
-          }}
-        >
-          Forge Ideas. Build Reality.
-        </p>
 
-        <textarea
-          value={idea}
-          onChange={(e) => setIdea(e.target.value)}
-          placeholder="Describe your goal...
-
-Example:
-
-I want to earn $100/month.
-
-I want to build an AI YouTube channel.
-
-I want to write a novel."
-          style={{
-            width: "100%",
-            minHeight: "220px",
-            background: "#1e293b",
-            color: "white",
-            border: "1px solid #334155",
-            borderRadius: "20px",
-            padding: "20px",
-            fontSize: "18px",
-            resize: "none",
-          }}
-        />
-
-        <button
-          onClick={forgeIdea}
-          disabled={loading}
+      {result && (
+        <div
           style={{
             marginTop: "20px",
-            width: "100%",
-            padding: "18px",
-            borderRadius: "18px",
-            border: "none",
-            background: "#facc15",
-            color: "#111827",
-            fontSize: "20px",
-            fontWeight: "bold",
-            cursor: "pointer",
+            whiteSpace: "pre-wrap",
+            padding: "20px",
+            background: "rgba(255,255,255,0.1)",
+            borderRadius: "10px",
           }}
         >
-          {loading ? "⚡ Forging..." : "⚡ Forge My Idea"}
-        </button>
+          <h2>AI Analysis Report</h2>
+          {result}
+        </div>
+      )}
 
-        {result && (
-          <div
-            style={{
-              marginTop: "40px",
-              background: "#1e293b",
-              padding: "25px",
-              borderRadius: "20px",
-              whiteSpace: "pre-wrap",
-              lineHeight: "1.8",
-            }}
-          >
-            {result}
-          </div>
-        )}
-      </div>
     </main>
   );
 }
