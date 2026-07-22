@@ -1,131 +1,80 @@
-import { NextResponse } from "next/server";
 import Groq from "groq-sdk";
+import { NextResponse } from "next/server";
 
 const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY!,
+  apiKey: process.env.GROQ_API_KEY,
 });
+
+function selectBrain(idea: string) {
+  const text = idea.toLowerCase();
+
+  if (
+    text.includes("novel") ||
+    text.includes("story") ||
+    text.includes("book") ||
+    text.includes("character")
+  ) {
+    return {
+      name: "Story Forge Brain",
+      prompt:
+        "You are Story Forge Brain. Create powerful stories with characters, world building, conflicts, emotional hooks, and chapter directions.",
+    };
+  }
+
+  if (
+    text.includes("youtube") ||
+    text.includes("video") ||
+    text.includes("content") ||
+    text.includes("creator")
+  ) {
+    return {
+      name: "Creator Forge Brain",
+      prompt:
+        "You are Creator Forge Brain. Build a content strategy including audience, growth plan, content ideas, and monetization methods.",
+    };
+  }
+
+  if (
+    text.includes("app") ||
+    text.includes("software") ||
+    text.includes("ai") ||
+    text.includes("platform")
+  ) {
+    return {
+      name: "Tech Forge Brain",
+      prompt:
+        "You are Tech Forge Brain. Design the product idea including features, users, technology, MVP roadmap, and scaling strategy.",
+    };
+  }
+
+  return {
+    name: "Startup Forge Brain",
+    prompt:
+      "You are Startup Forge Brain. Transform ideas into business opportunities with market analysis, monetization, action plans, and growth strategies.",
+  };
+}
 
 export async function POST(req: Request) {
   try {
     const { idea } = await req.json();
 
-    if (!idea?.trim()) {
-      return NextResponse.json({
-        result: "❌ Please enter an idea first.",
-      });
-    }
+    const brain = selectBrain(idea);
 
-    const systemPrompt = `
-You are One Idea AI.
-
-MISSION:
-Transform one simple idea into a complete execution plan.
-
-RULES:
-- Never mention prompts.
-- Never say "As an AI..."
-- Keep everything mobile friendly.
-- Avoid long paragraphs.
-- Use emojis naturally.
-- Use bullet points.
-- Every section should be short and easy to copy.
-
-Always reply using EXACTLY this format:
-
-🎯 Opportunity Score
-Score out of 10.
-
-━━━━━━━━━━━━━━
-
-💡 Summary
-Maximum 3 bullet points.
-
-━━━━━━━━━━━━━━
-
-👥 Target Audience
-5 bullet points.
-
-━━━━━━━━━━━━━━
-
-💰 Monetization
-5 bullet points.
-
-━━━━━━━━━━━━━━
-
-📈 Market Potential
-Short explanation.
-
-━━━━━━━━━━━━━━
-
-🎬 10 Content Ideas
-One line each.
-
-━━━━━━━━━━━━━━
-
-📝 Sample Script
-
-Hook
-
-Body
-
-CTA
-
-Maximum 8 lines.
-
-━━━━━━━━━━━━━━
-
-🖼 Thumbnail Prompt
-
-One paragraph.
-
-━━━━━━━━━━━━━━
-
-🎥 AI Video Prompt
-
-Short cinematic prompt.
-
-━━━━━━━━━━━━━━
-
-📄 Caption
-
-Maximum 3 short paragraphs.
-
-━━━━━━━━━━━━━━
-
-🏷 Hashtags
-
-One line only.
-
-Example:
-
-#AI #Business #Startup
-
-━━━━━━━━━━━━━━
-
-📅 Smart Schedule
-
-Recommend posting days and times.
-
-━━━━━━━━━━━━━━
-
-🚀 First 5 Actions
-
-Checklist format.
-
-IMPORTANT:
-
-Everything must be easy to copy.
-
-Never write huge paragraphs.
-`;
-
-    const completion = await groq.chat.completions.create({
+    const chat = await groq.chat.completions.create({
       model: "llama-3.1-8b-instant",
-      temperature: 0.7,
       messages: [
         {
           role: "system",
-          content: systemPrompt,
+          content: `
+You are One Idea AI.
+
+Active Brain:
+${brain.name}
+
+${brain.prompt}
+
+Always create a detailed but practical blueprint.
+`,
         },
         {
           role: "user",
@@ -135,16 +84,14 @@ Never write huge paragraphs.
     });
 
     return NextResponse.json({
-      result:
-        completion.choices[0]?.message?.content ??
-        "No response generated.",
+      brain: brain.name,
+      result: chat.choices[0].message.content,
     });
-  } catch (error) {
-    console.error(error);
 
-    return NextResponse.json({
-      result:
-        "❌ Something went wrong. Please check your API key.",
-    });
+  } catch (error) {
+    return NextResponse.json(
+      { error: "AI connection failed" },
+      { status: 500 }
+    );
   }
 }
