@@ -8,6 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@next/swc-wasm-nodejs": "^16.2.12",
     "groq-sdk": "^0.30.0",
     "next": "15.5.21",
     "react": "19.0.0",
